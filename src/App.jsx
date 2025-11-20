@@ -1,9 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { 
   Shield, Terminal, Globe, Wifi, Eye, Activity, 
   Server, Database, Target, FileCode, 
-  Ghost, Layout, ChevronRight, ZoomIn, ZoomOut, Move,
-  List, Command, Cpu, Lock, Key
+  Ghost, ChevronRight, ZoomIn, ZoomOut, Move
 } from 'lucide-react';
 
 // --- DATOS EXPANDIDOS: NIVEL TÁCTICO (PASOS) ---
@@ -109,7 +108,7 @@ const initialData = {
           icon: 'Server',
           children: [
             { 
-              id: 'inf1', label: 'Fase 1: Enumeración', type: 'process',
+              id: 'inf1', label: 'Enumeración (Nmap/NSE)', type: 'process',
               children: [
                 { id: 'inf1-1', label: 'Host Discovery (-sn)' },
                 { id: 'inf1-2', label: 'Port Scan (-p-)' },
@@ -118,7 +117,7 @@ const initialData = {
               ]
             },
             { 
-              id: 'inf2', label: 'Fase 2: Explotación', type: 'process',
+              id: 'inf2', label: 'Explotación (Metasploit)', type: 'process',
               children: [
                 { id: 'inf2-1', label: 'Searchsploit / CVEs' },
                 { id: 'inf2-2', label: 'Password Spraying' },
@@ -126,7 +125,7 @@ const initialData = {
               ]
             },
             { 
-              id: 'inf3', label: 'Fase 3: Pivoting', type: 'process',
+              id: 'inf3', label: 'Pivoting (Chisel/Ligolo)', type: 'process',
               children: [
                 { id: 'inf3-1', label: 'Enumerar Interfaces' },
                 { id: 'inf3-2', label: 'Chisel / Ligolo Setup' },
@@ -142,7 +141,7 @@ const initialData = {
           icon: 'Globe',
           children: [
             { 
-              id: 'web1', label: 'Reconocimiento', type: 'process',
+              id: 'web1', label: 'Recon (Fuzzing)', type: 'process',
               children: [
                 { id: 'w1-1', label: 'Subdomain Enum' },
                 { id: 'w1-2', label: 'Tech Profiling (Wappalyzer)' },
@@ -150,12 +149,20 @@ const initialData = {
               ]
             },
             { 
-              id: 'web2', label: 'OWASP Attacks', type: 'process',
+              id: 'web2', label: 'OWASP Top 10', type: 'process',
               children: [
                 { id: 'w2-1', label: 'SQL Injection (Union/Blind)' },
                 { id: 'w2-2', label: 'XSS (Reflected/Stored)' },
                 { id: 'w2-3', label: 'IDOR & Auth Bypass' },
                 { id: 'w2-4', label: 'RCE / Command Inj' }
+              ]
+            },
+            {
+              id: 'web3', label: 'Herramientas', type: 'process',
+              children: [
+                { id: 'w3-1', label: 'Burp Suite Pro' },
+                { id: 'w3-2', label: 'ZAP' },
+                { id: 'w3-3', label: 'SQLMap' }
               ]
             }
           ]
@@ -167,7 +174,7 @@ const initialData = {
           icon: 'Database',
           children: [
             { 
-              id: 'ad1', label: 'AD Enumeration', type: 'process',
+              id: 'ad1', label: 'Recon (Bloodhound)', type: 'process',
               children: [
                 { id: 'ad1-1', label: 'Domain Mapping (Bloodhound)' },
                 { id: 'ad1-2', label: 'User/Group Enum (LDAP)' },
@@ -175,7 +182,7 @@ const initialData = {
               ]
             },
             { 
-              id: 'ad2', label: 'Identity Attacks', type: 'process',
+              id: 'ad2', label: 'Identity Attacks (Kerberoasting)', type: 'process',
               children: [
                 { id: 'ad2-1', label: 'AS-REP Roasting' },
                 { id: 'ad2-2', label: 'Kerberoasting' },
@@ -183,7 +190,7 @@ const initialData = {
               ]
             },
             { 
-              id: 'ad3', label: 'Persistencia AD', type: 'process',
+              id: 'ad3', label: 'Persistencia (Golden Ticket)', type: 'process',
               children: [
                 { id: 'ad3-1', label: 'Golden Ticket' },
                 { id: 'ad3-2', label: 'DCSync Attack' },
@@ -200,8 +207,8 @@ const initialData = {
       type: 'section',
       icon: 'Eye',
       children: [
-        { id: 'o1', label: 'Google Hacking', type: 'topic', children: [{id: 'o1-1', label: 'Filetypes'}, {id: 'o1-2', label: 'Site Operator'}] },
-        { id: 'o2', label: 'Infra OSINT', type: 'topic', children: [{id: 'o2-1', label: 'Shodan/Censys'}, {id: 'o2-2', label: 'Whois/DNS'}] },
+        { id: 'o1', label: 'Google Dorks', type: 'topic', children: [{id: 'o1-1', label: 'Filetypes'}, {id: 'o1-2', label: 'Site Operator'}] },
+        { id: 'o2', label: 'Infra (Shodan/Censys)', type: 'topic', children: [{id: 'o2-1', label: 'Shodan/Censys'}, {id: 'o2-2', label: 'Whois/DNS'}] },
         { id: 'o3', label: 'SOCMINT', type: 'topic', children: [{id: 'o3-1', label: 'Username Checks'}, {id: 'o3-2', label: 'Metadata Analysis'}] }
       ]
     },
@@ -211,9 +218,9 @@ const initialData = {
       type: 'section',
       icon: 'Activity',
       children: [
-        { id: 'b1', label: 'DFIR', type: 'topic', children: [{id:'b1-1', label: 'Triage & Collection'}, {id:'b1-2', label: 'Memory Analysis'}, {id:'b1-3', label: 'Disk Forensics'}] },
-        { id: 'b2', label: 'SIEM', type: 'topic', children: [{id:'b2-1', label: 'Log Ingestion'}, {id:'b2-2', label: 'Correlation Rules'}] },
-        { id: 'b3', label: 'Hunting', type: 'topic', children: [{id:'b3-1', label: 'IOC Matching'}, {id:'b3-2', label: 'YARA Rules'}] }
+        { id: 'b1', label: 'DFIR (Disco/Memoria)', type: 'topic', children: [{id:'b1-1', label: 'Triage & Collection'}, {id:'b1-2', label: 'Memory Analysis'}, {id:'b1-3', label: 'Disk Forensics'}] },
+        { id: 'b2', label: 'SIEM & Logs (Splunk)', type: 'topic', children: [{id:'b2-1', label: 'Log Ingestion'}, {id:'b2-2', label: 'Correlation Rules'}] },
+        { id: 'b3', label: 'Hunting (YARA Rules)', type: 'topic', children: [{id:'b3-1', label: 'IOC Matching'}, {id:'b3-2', label: 'YARA Rules'}] }
       ]
     }
   ]
@@ -222,48 +229,58 @@ const initialData = {
 // --- Mapeo de Iconos ---
 const IconMap = {
   Ghost, Shield, Terminal, Globe, Wifi, Eye, Activity, 
-  Server, Database, Target, FileCode, Layout, List, Command, Cpu, Lock, Key
+  Server, Database, Target, FileCode, ChevronRight, ZoomIn, ZoomOut, Move
 };
 
 // --- Componente Nodo del Mapa ---
-const MapNode = ({ data, depth = 0, isLast, parentX, parentY }) => {
-  const [collapsed, setCollapsed] = useState(data.collapsed ?? (depth > 1)); 
+const MapNode = ({ data, depth = 0 }) => {
+  // Ajuste: Colapsar nodos de proceso (depth 3) o superior por defecto, dejando la rama principal abierta.
+  const [collapsed, setCollapsed] = useState(data.collapsed ?? (depth > 2)); 
   
-  // Estilos para diferentes niveles de profundidad
-  const getStyles = (type) => {
+  // Estilos para diferentes niveles de profundidad (Basado en la clase 'node-base')
+  const getClassName = (type) => {
     switch(type) {
-      case 'root': return 'bg-red-600 border-red-500 text-white shadow-[0_0_30px_rgba(220,38,38,0.4)] ring-2 ring-red-900';
-      case 'core': return 'bg-slate-900 border-red-500/80 text-red-100 shadow-[0_0_15px_rgba(220,38,38,0.2)]';
-      case 'section': return 'bg-slate-900 border-slate-600 text-slate-200 hover:border-slate-400';
-      case 'subsection': return 'bg-slate-950 border-slate-700 text-slate-300 hover:border-slate-500';
-      case 'process': return 'bg-[#0f172a] border-slate-800 text-slate-300 border-l-2 border-l-blue-500'; // Nivel de pasos intermedios
-      case 'topic': return 'bg-[#0f172a] border-slate-800 text-slate-300';
-      default: return 'bg-transparent border-transparent text-slate-500 text-xs py-0.5 hover:text-slate-300'; // Hojas finales (Pasos)
+      case 'root': return 'node-root';
+      case 'core': return 'node-core';
+      case 'section': return 'node-section';
+      case 'subsection': return 'node-subsection';
+      case 'process': return 'node-process'; // Nivel de pasos intermedios
+      case 'topic': return 'node-topic';
+      default: return 'node-step'; // Hojas finales (Pasos)
     }
   };
 
   const NodeIcon = IconMap[data.icon];
 
   return (
-    <div className="flex flex-row items-center">
+    <div className="flex-row" style={{ display: 'flex', alignItems: 'center' }}>
       {/* El Nodo en sí */}
-      <div className="flex flex-col items-start relative z-10">
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', position: 'relative', zIndex: 10 }}>
         <div 
-          onClick={(e) => { e.stopPropagation(); if(data.children) setCollapsed(!collapsed); }}
-          className={`
-            flex items-center gap-2 px-3 py-2 rounded-lg border transition-all duration-300 cursor-pointer select-none
-            hover:scale-105 active:scale-95 whitespace-nowrap
-            ${getStyles(data.type)}
-            ${depth === 0 ? 'text-xl font-bold px-6 py-4' : ''}
-            ${depth >= 4 ? 'pl-2 pr-3 py-1 text-xs border-l border-slate-700' : 'text-sm font-medium'}
-          `}
+          onClick={() => { if(data.children) setCollapsed(!collapsed); }}
+          className={`node-base ${getClassName(data.type)} ${depth === 0 ? 'node-xl' : (depth >= 4 ? 'node-sm' : 'node-md')}`}
+          style={{ 
+            cursor: data.children ? 'pointer' : 'default', 
+            transition: 'all 0.3s ease-in-out',
+            paddingLeft: depth >= 4 ? '0.5rem' : '0.75rem',
+            paddingRight: depth >= 4 ? '0.75rem' : '0.75rem',
+          }}
         >
-          {NodeIcon && <NodeIcon className={`${depth === 0 ? 'w-6 h-6' : 'w-4 h-4'}`} />}
-          <span>{data.label}</span>
+          {NodeIcon && <NodeIcon style={{ width: depth === 0 ? '24px' : '16px', height: depth === 0 ? '24px' : '16px' }} />}
+          <span style={{ whiteSpace: 'nowrap' }}>{data.label}</span>
           
           {data.children && (
-            <div className={`ml-2 p-0.5 rounded-full bg-black/20 transition-transform ${collapsed ? '' : 'rotate-90'}`}>
-              <ChevronRight className="w-3 h-3" />
+            <div 
+              style={{ 
+                marginLeft: '0.5rem', 
+                padding: '2px', 
+                borderRadius: '50%', 
+                backgroundColor: 'rgba(0,0,0,0.2)',
+                transition: 'transform 0.3s',
+                transform: collapsed ? 'rotate(0deg)' : 'rotate(90deg)'
+              }}
+            >
+              <ChevronRight style={{ width: '12px', height: '12px' }} />
             </div>
           )}
         </div>
@@ -271,25 +288,25 @@ const MapNode = ({ data, depth = 0, isLast, parentX, parentY }) => {
 
       {/* Renderizado de Hijos (Rama derecha) */}
       {!collapsed && data.children && data.children.length > 0 && (
-        <div className="flex flex-row items-center">
+        <div className="flex-row" style={{ display: 'flex', alignItems: 'center' }}>
           
           {/* Línea Conectora Horizontal */}
-          <div className="w-8 h-px bg-slate-700"></div>
+          <div style={{ width: '2rem', height: '1px', backgroundColor: '#334155' }}></div>
 
           {/* Contenedor Vertical de Hijos */}
-          <div className="flex flex-col gap-2 relative">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', position: 'relative' }}>
             {/* Línea Conectora Vertical */}
             {data.children.length > 1 && (
-               <div className="absolute left-0 top-3 bottom-3 w-px bg-slate-700 -translate-x-[1px]"></div>
+               <div style={{ position: 'absolute', left: 0, top: '12px', bottom: '12px', width: '1px', backgroundColor: '#334155', transform: 'translateX(-1px)' }}></div>
             )}
 
             {data.children.map((child, idx) => (
-              <div key={idx} className="flex items-center relative py-1">
+              <div key={idx} className="flex-row" style={{ display: 'flex', alignItems: 'center', position: 'relative', padding: '0.25rem 0' }}>
                 {/* Pequeña línea horizontal */}
-                <div className="w-6 h-px bg-slate-700"></div>
+                <div style={{ width: '1.5rem', height: '1px', backgroundColor: '#334155' }}></div>
                 
                 {/* Recursividad */}
-                <MapNode data={child} depth={depth + 1} isLast={idx === data.children.length - 1} />
+                <MapNode data={child} depth={depth + 1} />
               </div>
             ))}
           </div>
@@ -302,12 +319,13 @@ const MapNode = ({ data, depth = 0, isLast, parentX, parentY }) => {
 // --- Lienzo Principal (Canvas) ---
 const PyrhosMindMap = () => {
   const [scale, setScale] = useState(1);
-  const [position, setPosition] = useState({ x: 50, y: 100 }); // Ajustado para mejor vista inicial
+  const [position, setPosition] = useState({ x: 50, y: 100 }); 
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const containerRef = useRef(null);
 
   const handleMouseDown = (e) => {
+    e.preventDefault(); // Evita la selección de texto durante el arrastre
     setIsDragging(true);
     setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
   };
@@ -324,31 +342,163 @@ const PyrhosMindMap = () => {
   const handleMouseUp = () => setIsDragging(false);
 
   return (
-    <div className="w-full h-screen bg-[#050505] overflow-hidden text-slate-300 font-mono flex flex-col">
-      
+    <div style={{ 
+      width: '100%', 
+      height: '100vh', 
+      backgroundColor: '#050505', 
+      overflow: 'hidden', 
+      color: '#e2e8f0', 
+      fontFamily: 'monospace', 
+      display: 'flex', 
+      flexDirection: 'column' 
+    }}>
+      {/* CSS Styles Block */}
+      <style>
+        {`
+          .node-base {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid transparent;
+            transition: all 0.3s ease-in-out;
+            user-select: none;
+            cursor: pointer;
+          }
+
+          /* Hover effects */
+          .node-base:hover {
+            transform: scale(1.05);
+          }
+          .node-base:active {
+            transform: scale(0.95);
+          }
+
+          /* Font Sizes and Weights */
+          .node-xl { font-size: 1.25rem; font-weight: bold; padding: 1rem 1.5rem; }
+          .node-md { font-size: 0.875rem; font-weight: 500; }
+          .node-sm { font-size: 0.75rem; font-weight: 500; padding: 0.25rem 0.75rem; border-left: 1px solid #334155; }
+
+          /* Node Colors */
+          .node-root { 
+            background-color: #dc2626; /* bg-red-600 */
+            border-color: #ef4444; /* border-red-500 */
+            color: white; 
+            box-shadow: 0 0 30px rgba(220,38,38,0.4);
+            border-width: 2px;
+          }
+          .node-core { 
+            background-color: #0f172a; /* bg-slate-900 */
+            border-color: #ef4444; /* border-red-500/80 */
+            color: #fecaca; /* text-red-100 */
+            box-shadow: 0 0 15px rgba(220,38,38,0.2);
+          }
+          .node-section { 
+            background-color: #0f172a; /* bg-slate-900 */
+            border-color: #475569; /* border-slate-600 */
+            color: #e2e8f0; /* text-slate-200 */
+          }
+          .node-section:hover { border-color: #94a3b8; } /* hover:border-slate-400 */
+
+          .node-subsection { 
+            background-color: #020617; /* bg-slate-950 */
+            border-color: #334155; /* border-slate-700 */
+            color: #cbd5e1; /* text-slate-300 */
+          }
+          .node-subsection:hover { border-color: #64748b; } /* hover:border-slate-500 */
+
+          .node-process { 
+            background-color: #0f172a; 
+            border-color: #1e293b; /* border-slate-800 */
+            color: #cbd5e1;
+            border-left: 2px solid #3b82f6; /* border-l-2 border-l-blue-500 */
+          }
+          
+          .node-topic {
+            background-color: #0f172a;
+            border-color: #1e293b; 
+            color: #cbd5e1;
+          }
+
+          .node-step {
+            background-color: transparent;
+            border-color: transparent;
+            color: #94a3b8; /* text-slate-500 */
+            font-size: 0.75rem;
+            padding: 0.125rem 0.5rem;
+          }
+          .node-step:hover { color: #e2e8f0; }
+          
+          /* Utility styles for the UI header/footer */
+          .ui-button {
+            padding: 0.5rem;
+            background-color: transparent;
+            border: none;
+            color: #94a3b8; /* text-slate-400 */
+            border-radius: 0.5rem;
+            transition: background-color 0.2s, color 0.2s;
+          }
+          .ui-button:hover {
+            background-color: #1e293b; /* bg-slate-800 */
+            color: white;
+          }
+          .ui-panel {
+            background-color: rgba(15, 23, 42, 0.8); /* bg-slate-900/80 */
+            backdrop-filter: blur(5px);
+            padding: 0.375rem;
+            border-radius: 0.5rem;
+            border: 1px solid #1e293b; /* border-slate-800 */
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+          }
+          .ui-divider {
+            width: 1px;
+            height: 1rem;
+            background-color: #334155; /* bg-slate-700 */
+            margin: 0 0.25rem;
+          }
+        `}
+      </style>
+
       {/* UI Overlay (Header) */}
-      <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-black/90 to-transparent z-50 pointer-events-none flex items-center justify-between px-8">
-        <div className="flex items-center gap-3 pointer-events-auto">
-          <div className="bg-red-600 p-1.5 rounded text-white">
-            <Ghost className="w-5 h-5" />
+      <div style={{ 
+        position: 'absolute', 
+        top: 0, 
+        left: 0, 
+        right: 0, 
+        height: '4rem', 
+        backgroundImage: 'linear-gradient(to bottom, rgba(0,0,0,0.9), transparent)', 
+        zIndex: 50, 
+        pointerEvents: 'none', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'space-between', 
+        paddingLeft: '2rem', 
+        paddingRight: '2rem' 
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', pointerEvents: 'auto' }}>
+          <div style={{ backgroundColor: '#dc2626', padding: '0.375rem', borderRadius: '0.25rem', color: 'white' }}>
+            <Ghost style={{ width: '20px', height: '20px' }} />
           </div>
           <div>
-            <h1 className="font-bold text-white tracking-wider text-lg leading-none">PYRHOS<span className="text-red-500">.MAP</span></h1>
-            <span className="text-[10px] text-slate-500 uppercase tracking-widest">Knowledge Graph v3.0 - Detailed</span>
+            <h1 style={{ fontWeight: 'bold', color: 'white', letterSpacing: '0.05em', fontSize: '1.125rem', lineHeight: '1' }}>PYRHOS<span style={{ color: '#ef4444' }}>.MAP</span></h1>
+            <span style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Knowledge Graph v3.0 - No Tailwind</span>
           </div>
         </div>
         
-        <div className="pointer-events-auto flex items-center gap-2 bg-slate-900/80 backdrop-blur p-1.5 rounded-lg border border-slate-800">
-          <button onClick={() => setScale(s => Math.max(0.3, s - 0.1))} className="p-2 hover:bg-slate-800 rounded text-slate-400 hover:text-white transition-colors">
-            <ZoomOut className="w-4 h-4" />
+        <div className="ui-panel" style={{ pointerEvents: 'auto' }}>
+          <button onClick={() => setScale(s => Math.max(0.3, s - 0.1))} className="ui-button" title="Zoom Out">
+            <ZoomOut style={{ width: '16px', height: '16px' }} />
           </button>
-          <span className="text-xs w-12 text-center font-bold">{Math.round(scale * 100)}%</span>
-          <button onClick={() => setScale(s => Math.min(2, s + 0.1))} className="p-2 hover:bg-slate-800 rounded text-slate-400 hover:text-white transition-colors">
-            <ZoomIn className="w-4 h-4" />
+          <span style={{ fontSize: '0.75rem', width: '3rem', textAlign: 'center', fontWeight: 'bold' }}>{Math.round(scale * 100)}%</span>
+          <button onClick={() => setScale(s => Math.min(2, s + 0.1))} className="ui-button" title="Zoom In">
+            <ZoomIn style={{ width: '16px', height: '16px' }} />
           </button>
-          <div className="w-px h-4 bg-slate-700 mx-1"></div>
-          <div className="p-2 text-slate-500 cursor-grab active:cursor-grabbing" title="Arrastra para mover">
-            <Move className="w-4 h-4" />
+          <div className="ui-divider"></div>
+          <div style={{ padding: '0.5rem', color: '#94a3b8', cursor: 'grab' }} title="Arrastra para mover">
+            <Move style={{ width: '16px', height: '16px' }} />
           </div>
         </div>
       </div>
@@ -356,15 +506,18 @@ const PyrhosMindMap = () => {
       {/* Área del Mapa Interactivo */}
       <div 
         ref={containerRef}
-        className={`flex-1 relative overflow-hidden cursor-grab active:cursor-grabbing ${isDragging ? 'cursor-grabbing' : ''}`}
+        style={{ flex: 1, position: 'relative', overflow: 'hidden', cursor: isDragging ? 'grabbing' : 'grab' }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
       >
         <div 
-          className="absolute inset-0 pointer-events-none opacity-10"
           style={{
+            position: 'absolute', 
+            inset: 0, 
+            pointerEvents: 'none', 
+            opacity: 0.1,
             backgroundImage: `
               linear-gradient(to right, #333 1px, transparent 1px),
               linear-gradient(to bottom, #333 1px, transparent 1px)
@@ -375,23 +528,25 @@ const PyrhosMindMap = () => {
         />
         
         <div 
-          className="absolute origin-top-left transition-transform duration-75 ease-out"
           style={{
+            position: 'absolute', 
+            transformOrigin: 'top left', 
+            transition: 'transform 0.075s ease-out',
             transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`
           }}
         >
-          <div className="p-20">
+          <div style={{ padding: '5rem' }}>
              <MapNode data={initialData} />
           </div>
         </div>
       </div>
 
       {/* Footer Info */}
-      <div className="absolute bottom-6 left-6 z-50 pointer-events-none">
-        <div className="flex flex-col gap-1 text-[10px] text-slate-600 font-bold tracking-widest">
+      <div style={{ position: 'absolute', bottom: '1.5rem', left: '1.5rem', zIndex: 50, pointerEvents: 'none' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', fontSize: '10px', color: '#475569', fontWeight: 'bold', letterSpacing: '0.1em' }}>
           <span>X: {Math.round(position.x)} / Y: {Math.round(position.y)}</span>
-          <span>NODES: DETAILED // DEPTH: 4</span>
-          <span className="text-red-900/50">SYSTEM: SECURE</span>
+          <span>NODOS: DETAILED // DEPTH: 4</span>
+          <span style={{ color: 'rgba(185, 28, 28, 0.5)' }}>SYSTEM: SECURE</span>
         </div>
       </div>
 
